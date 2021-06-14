@@ -1,0 +1,27 @@
+[Unit]
+Description=Minecraft RAD Server
+After=network.target
+
+[Service]
+User=minecraft
+Group=minecraft
+WorkingDirectory=/opt/minecraft
+SuccessExitStatus=143
+Restart=on-failure
+TimeoutStopSec=120
+KillSignal=SIGCONT
+
+ExecStart=screen -DmS mcs java -Xms10G -Xmx10G -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=100 -XX:+DisableExplicitGC -XX:TargetSurvivorRatio=90 -XX:G1NewSizePercent=50 -XX:G1MaxNewSizePercent=80 -XX:G1MixedGCLiveThresholdPercent=35 -XX:+AlwaysPreTouch -XX:+ParallelRefProcEnabled -jar forge-1.12.2-14.23.5.2854.jar nogui
+
+ExecStop=/usr/bin/screen -p 0 -S mcs -X stuff '/say "SERVER SHUTTING DOWN IN 15 SECONDS"\n'
+ExecStop=/usr/bin/sleep 5
+ExecStop=/usr/bin/screen -p 0 -S mcs -X stuff '/say "SERVER SHUTTING DOWN IN 10 SECONDS"\n'
+ExecStop=/usr/bin/sleep 5
+ExecStop=/usr/bin/screen -p 0 -S mcs -X stuff '/say "SERVER SHUTTING DOWN IN 5 SECONDS"\n'
+ExecStop=/usr/bin/sleep 5
+ExecStop=/usr/bin/screen -p 0 -S mcs -X stuff '/save-all flush\n'
+ExecStop=/usr/bin/screen -p 0 -S mcs -X stuff '/stop\n'
+
+[Install]
+WantedBy=multi-user.target
+
